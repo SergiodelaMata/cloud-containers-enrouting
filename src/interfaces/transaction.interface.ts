@@ -1,8 +1,8 @@
-import {Long} from "typeorm";
 export interface Transaction {
   transactionId: string;
-  quantity: Long;
-  description: string;
-  image: string;
-
+  quantity: number;
+  typetransaction: string;
+  datetransaction: Date;
+  productId: string;
+  userId: string;
 }
