@@ -45,12 +45,36 @@ router.post("/user", async(req: Request, res: Response) => {
 });
 
 router.put("/user/update", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
-    method:"put",
-    body: JSON.stringify(req.body),
-    headers: {"Content-Type": "application/json"},
-  });
-  res.send(await response.json());
+  var status;
+  if(req.body.password == "" || req.body.newpassword == "" || req.body.verifypassword == "")
+  {
+    req.body.password = req.body.currentpassword; //Se mantiene la contraseña que había antes
+    const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
+        method:"put",
+        body: JSON.stringify(req.body),
+        headers: {"Content-Type": "application/json"},
+      });
+      status = await response.json();
+  }
+  else
+  {
+    if(req.body.currentpassword == req.body.password && req.body.currentpassword != req.body.newpassword 
+      && req.body.currentpassword != req.body.verifypassword && req.body.newpassword == req.body.verifypassword)
+    {
+      req.body.password = req.body.newpassword; //Se actualiza el campo de la contraseña para facilitar la búsqueda de la contraseña por parte del microservicio
+      const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
+        method:"put",
+        body: JSON.stringify(req.body),
+        headers: {"Content-Type": "application/json"},
+      });
+      status = await response.json();
+    }
+    else
+    {
+      status = {status : "Password different"};
+    }
+  }
+  res.send(status);
 });
 
 router.delete("/admin/user/:userId", async(req: Request, res: Response) => {
