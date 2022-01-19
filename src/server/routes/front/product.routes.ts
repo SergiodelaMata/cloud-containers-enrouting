@@ -1,4 +1,4 @@
-import express, { Router, Response } from "express";
+import express, { Router, Request, Response } from "express";
 import fetch from "node-fetch";
 import {Ports} from "../../server.ports";
 
@@ -13,6 +13,12 @@ router.get("/products/:productId", async(req: Request, res: Response) => {
   const response = await fetch(`http://localhost:${Ports.Products + req.url}`);
   res.send(await response.json());
 });
+
+router.get("/products/productByName/:name", async(req: Request, res: Response) => {
+  const response = await fetch(`http://localhost:${Ports.Products + req.url}`);
+  res.send(await response.json());
+});
+
 
 router.post("/product", async(req: Request, res: Response) => {
   const response = await fetch(`http://localhost:${Ports.Products + req.url}`, {

@@ -10,6 +10,12 @@ router.get("/users", async(req: Request, res: Response) => {
   res.send(await response.json());
 });
 
+router.get("/user/findByEmail/:email", async(req: Request, res: Response) => {
+  const response = await fetch(`http://localhost:${Ports.Users}/user/email/${req.params.email}`);
+  res.send(await response.json());
+});
+
+
 router.get("/users/:userId", async(req: Request, res: Response) => {
   const response = await fetch(`http://localhost:${Ports.Users + req.url}`);
   res.send(await response.json());
