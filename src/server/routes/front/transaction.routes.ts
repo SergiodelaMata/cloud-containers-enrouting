@@ -5,12 +5,26 @@ import {Ports} from "../../server.ports";
 const router: Router = express.Router();
 
 router.get("/transactions", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`);
+  const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`, {
+    method:"get",
+    headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
+  });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 
 router.get("/transactions/:transactionId", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`);
+  const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`, {
+    method:"get",
+    headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
+  });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 
@@ -20,7 +34,7 @@ router.post("/transaction/comprar", async(req: Request, res: Response) => {
   const responseProduct = await fetch(`http://localhost:${Ports.Products}/product/quantity/update`, {
     method:"put",
     body: JSON.stringify(req.body),
-    headers: {"Content-Type": "application/json"},
+    headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"product"},
   });
   const responseStatusProduct = await responseProduct.json();
   const formattedResponseProduct = JSON.parse(JSON.stringify(responseStatusProduct));
@@ -29,7 +43,7 @@ router.post("/transaction/comprar", async(req: Request, res: Response) => {
     const responseTransaction = await fetch(`http://localhost:${Ports.Transactions}/transaction`, {
       method:"post",
       body: JSON.stringify(req.body),
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
     });
     const responseStatusTransaction = await responseTransaction.json();
     const formattedResponseTransaction = JSON.parse(JSON.stringify(responseStatusTransaction));
@@ -45,7 +59,7 @@ router.post("/transaction/comprar", async(req: Request, res: Response) => {
       await fetch(`http://localhost:${Ports.Products}/product/quantity/update`, {
         method:"put",
         body: JSON.stringify(req.body),
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"product"},
       });
       response = {statusBuy:"Error with transaction"};
     }
@@ -55,6 +69,10 @@ router.post("/transaction/comprar", async(req: Request, res: Response) => {
   {
     response = {statusBuy:"Error with transaction"};
   }
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(response);
 });
 
@@ -70,7 +88,7 @@ router.post("/transaction/vender", async(req: Request, res: Response) => {
     const responseProduct = await fetch(`http://localhost:${Ports.Products}/product`, {
       method:"post",
       body: JSON.stringify(req.body),
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"product"},
     });
     statusResponseProduct = await responseProduct.json();
   }
@@ -83,7 +101,7 @@ router.post("/transaction/vender", async(req: Request, res: Response) => {
     const responseProduct = await fetch(`http://localhost:${Ports.Products}/product/update`, {
       method:"put",
       body: JSON.stringify(req.body),
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"product"},
     });
     statusResponseProduct = await responseProduct.json();
   }
@@ -95,7 +113,7 @@ router.post("/transaction/vender", async(req: Request, res: Response) => {
     const response = await fetch(`http://localhost:${Ports.Transactions}/transaction`, {
       method:"post",
       body: JSON.stringify(req.body),
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
     });
     status = await response.json();
     const formattedResponseStatus = JSON.parse(JSON.stringify(status));
@@ -112,6 +130,10 @@ router.post("/transaction/vender", async(req: Request, res: Response) => {
   {
     responseStatus = {statusSell:"Error with transaction"};
   }
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(responseStatus);
 });
 
@@ -119,15 +141,24 @@ router.put("/transaction/update", async(req: Request, res: Response) => {
   const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`, {
     method:"put",
     body: JSON.stringify(req.body),
-    headers: {"Content-Type": "application/json"},
+    headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
   });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 
 router.delete("/admin/transaction/:transactionId", async(req: Request, res: Response) => {
   const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`, {
     method:"delete",
+    headers: {"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
   });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 export default router;

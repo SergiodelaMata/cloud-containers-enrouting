@@ -7,7 +7,10 @@ import {GetHome} from "../../../interfaces/home.interface"
 const router: Router = express.Router();
 
 router.post("/login", async(req: Request, res: Response) => {
-    const response = await fetch(`http://localhost:${Ports.Users}/user/email/${req.body.email}`);
+    const response = await fetch(`http://localhost:${Ports.Users}/user/email/${req.body.email}`,{
+        method:"get",
+        headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"}
+    });
     const userData = await response.json();
     const formattedResponse: GetUser = JSON.parse(JSON.stringify(userData));
     var status : GetHome ;
@@ -21,7 +24,7 @@ router.post("/login", async(req: Request, res: Response) => {
         await fetch(`http://localhost:${Ports.RedisLogin}/login`, {
             method:"post",
             body: JSON.stringify(redisData),
-            headers: {"Content-Type": "application/json"},
+            headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"redis"},
         });
         status = {
             logged : true,
@@ -39,11 +42,19 @@ router.post("/login", async(req: Request, res: Response) => {
             rol : null
         };
     }
+    res.header("Content-Type", "application/json");
+    res.header("X-version","1");
+    res.header("X-sender","enrouting");
+    res.header("X-destination","app");
     res.send(status);
   });
 
 router.post("/checkLogged", async(req: Request, res: Response) => {
-    const responseRedisConn = await fetch(`http://localhost:${Ports.RedisLogin}/logged/${req.body.email}`);
+    const responseRedisConn = await fetch(`http://localhost:${Ports.RedisLogin}/logged/${req.body.email}`,
+    {
+        method:"get",
+        headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"redis"},
+    });
     const logged = await responseRedisConn.json();
     var checkResponse = JSON.parse(JSON.stringify(logged));
     console.log(checkResponse);
@@ -62,13 +73,22 @@ router.post("/checkLogged", async(req: Request, res: Response) => {
         formattedResponse.logged = true;
     }
 
+    res.header("Content-Type", "application/json");
+    res.header("X-version","1");
+    res.header("X-sender","enrouting");
+    res.header("X-destination","app");
     res.send(formattedResponse);
   });
 
   router.delete("/logout/:email", async(req: Request, res: Response) => {
     const responseRedisConn = await fetch(`http://localhost:${Ports.RedisLogin + req.url}`, {
         method:"delete",
+        headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"redis"},
     });
+    res.header("Content-Type", "application/json");
+    res.header("X-version","1");
+    res.header("X-sender","enrouting");
+    res.header("X-destination","app");
     res.send(await responseRedisConn.json());
   });
 
