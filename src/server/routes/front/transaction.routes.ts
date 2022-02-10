@@ -59,12 +59,60 @@ router.post("/transaction/comprar", async(req: Request, res: Response) => {
 });
 
 router.post("/transaction/vender", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Transactions}/transaction`, {
-    method:"post",
-    body: JSON.stringify(req.body),
-    headers: {"Content-Type": "application/json"},
-  });
-  res.send(await response.json());
+  var responseStatus = null;
+  var status;
+  var statusResponseProduct;
+  var quantitySelected: number = + req.body.quantity;
+  var quantity: number = 0;
+  if(req.body.productId == "0")//Nuevo producto
+  {
+    //Se introduce primero el producto
+    const responseProduct = await fetch(`http://localhost:${Ports.Products}/product`, {
+      method:"post",
+      body: JSON.stringify(req.body),
+      headers: {"Content-Type": "application/json"},
+    });
+    statusResponseProduct = await responseProduct.json();
+  }
+  else
+  {
+    //Se actualiza el campo de la cantidad del producto
+    quantity = +req.body.actualQuantity;
+    quantity += quantitySelected;
+    req.body.quantity = quantity;
+    const responseProduct = await fetch(`http://localhost:${Ports.Products}/product/update`, {
+      method:"put",
+      body: JSON.stringify(req.body),
+      headers: {"Content-Type": "application/json"},
+    });
+    statusResponseProduct = await responseProduct.json();
+  }
+  if(statusResponseProduct.status == "Saved" || statusResponseProduct.status == "Updated")
+  {
+    req.body.quantitySelected = quantitySelected;
+    req.body.typetransaction = "Vender";
+    req.body.datetransaction = new Date();
+    const response = await fetch(`http://localhost:${Ports.Transactions}/transaction`, {
+      method:"post",
+      body: JSON.stringify(req.body),
+      headers: {"Content-Type": "application/json"},
+    });
+    status = await response.json();
+    const formattedResponseStatus = JSON.parse(JSON.stringify(status));
+    if(formattedResponseStatus.status && formattedResponseStatus.status == "Saved")
+    {
+      responseStatus = {statusSell:"Sell"};
+    }
+    else
+    {
+      responseStatus = {statusSell:"Error with transaction"};
+    }
+  }
+  else
+  {
+    responseStatus = {statusSell:"Error with transaction"};
+  }
+  res.send(responseStatus);
 });
 
 router.put("/transaction/update", async(req: Request, res: Response) => {
