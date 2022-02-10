@@ -42,6 +42,7 @@ router.delete("/admin/product/:productId", async(req: Request, res: Response) =>
   const response = await fetch(`http://localhost:${Ports.Products + req.url}`, {
     method:"delete",
   });
+  console.log(response);
   res.send(await response.json());
 });
 
