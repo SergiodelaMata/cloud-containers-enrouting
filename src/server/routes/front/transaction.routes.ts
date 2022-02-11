@@ -28,6 +28,19 @@ router.get("/transactions/:transactionId", async(req: Request, res: Response) =>
   res.send(await response.json());
 });
 
+router.get("/transactions/user/:userId", async(req: Request, res: Response) => {
+  const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`, {
+    method:"get",
+    headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
+  });
+  console.log(response);
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
+  res.send(await response.json());
+});
+
 router.post("/transaction/comprar", async(req: Request, res: Response) => {
   var response = null;
 
@@ -91,6 +104,7 @@ router.post("/transaction/vender", async(req: Request, res: Response) => {
       headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"product"},
     });
     statusResponseProduct = await responseProduct.json();
+    req.body.productId = statusResponseProduct.productId;
   }
   else
   {
