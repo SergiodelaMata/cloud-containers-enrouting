@@ -164,15 +164,4 @@ router.put("/transaction/update", async(req: Request, res: Response) => {
   res.send(await response.json());
 });
 
-router.delete("/admin/transaction/:transactionId", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Transactions + req.url}`, {
-    method:"delete",
-    headers: {"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"transaction"},
-  });
-  res.header("Content-Type", "application/json");
-  res.header("X-version","1");
-  res.header("X-sender","enrouting");
-  res.header("X-destination","app");
-  res.send(await response.json());
-});
 export default router;
