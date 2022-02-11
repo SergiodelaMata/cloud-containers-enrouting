@@ -6,18 +6,39 @@ import {GetUser} from "../../../interfaces/user.interface"
 const router: Router = express.Router();
 
 router.get("/users", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Users + req.url}`);
+  const response = await fetch(`http://localhost:${Ports.Users + req.url}`,{
+    method:"get",
+    headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
+  });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 
 router.get("/user/findByEmail/:email", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Users}/user/email/${req.params.email}`);
+  const response = await fetch(`http://localhost:${Ports.Users}/user/email/${req.params.email}`,{
+    method:"get",
+    headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
+  });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 
 
 router.get("/users/:userId", async(req: Request, res: Response) => {
-  const response = await fetch(`http://localhost:${Ports.Users + req.url}`);
+  const response = await fetch(`http://localhost:${Ports.Users + req.url}`,{
+    method:"get",
+    headers:{"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
+  });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 
@@ -34,11 +55,10 @@ router.post("/user", async(req: Request, res: Response) => {
       email : req.body.email,
       rol : "user"
     }
-    console.log(userData);
     const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
       method:"post",
       body: JSON.stringify(userData),
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
     });
     status = await response.json();
   }
@@ -47,6 +67,10 @@ router.post("/user", async(req: Request, res: Response) => {
     status = {status: "Password different"};
   }
   
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(status);
 });
 
@@ -58,7 +82,7 @@ router.put("/user/update", async(req: Request, res: Response) => {
     const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
         method:"put",
         body: JSON.stringify(req.body),
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
       });
       status = await response.json();
   }
@@ -71,7 +95,7 @@ router.put("/user/update", async(req: Request, res: Response) => {
       const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
         method:"put",
         body: JSON.stringify(req.body),
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
       });
       status = await response.json();
     }
@@ -80,13 +104,22 @@ router.put("/user/update", async(req: Request, res: Response) => {
       status = {status : "Password different"};
     }
   }
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(status);
 });
 
 router.delete("/admin/user/:userId", async(req: Request, res: Response) => {
   const response = await fetch(`http://localhost:${Ports.Users + req.url}`, {
     method:"delete",
+    headers: {"X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"user"},
   });
+  res.header("Content-Type", "application/json");
+  res.header("X-version","1");
+  res.header("X-sender","enrouting");
+  res.header("X-destination","app");
   res.send(await response.json());
 });
 export default router;
