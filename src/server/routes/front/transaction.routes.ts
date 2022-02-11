@@ -91,6 +91,7 @@ router.post("/transaction/vender", async(req: Request, res: Response) => {
       headers: {"Content-Type": "application/json", "X-version":"1", "X-sender-service":"enrouting", "X-destination-service":"product"},
     });
     statusResponseProduct = await responseProduct.json();
+    req.body.productId = statusResponseProduct.productId;
   }
   else
   {
