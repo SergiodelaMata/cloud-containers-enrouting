@@ -3,11 +3,12 @@ import fetch from "node-fetch";
 import {Ports} from "../../server.ports";
 import {GetUser} from "../../../interfaces/user.interface"
 import {GetHome} from "../../../interfaces/home.interface"
+import { Hosts } from "../../server.hosts";
 
 const router: Router = express.Router();
 
 router.post("/login", async(req: Request, res: Response) => {
-    const response = await fetch(`http://localhost:${Ports.Users}/user/email/${req.body.email}`,{
+    const response = await fetch(`http://${Hosts.Users}:${Ports.Users}/user/email/${req.body.email}`,{
         method:"get",
         headers:{"X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"user"}
     });
@@ -21,7 +22,7 @@ router.post("/login", async(req: Request, res: Response) => {
             userId : formattedResponse.userData.userId,
             rol : formattedResponse.userData.rol
         }
-        await fetch(`http://localhost:${Ports.RedisLogin}/login`, {
+        await fetch(`http://${Hosts.RedisLogin}:${Ports.RedisLogin}/login`, {
             method:"post",
             body: JSON.stringify(redisData),
             headers: {"Content-Type": "application/json", "X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"redis"},
@@ -50,7 +51,7 @@ router.post("/login", async(req: Request, res: Response) => {
   });
 
 router.post("/checkLogged", async(req: Request, res: Response) => {
-    const responseRedisConn = await fetch(`http://localhost:${Ports.RedisLogin}/logged/${req.body.email}`,
+    const responseRedisConn = await fetch(`http://${Hosts.RedisLogin}:${Ports.RedisLogin}/logged/${req.body.email}`,
     {
         method:"get",
         headers:{"X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"redis"},
@@ -81,7 +82,7 @@ router.post("/checkLogged", async(req: Request, res: Response) => {
   });
 
   router.delete("/logout/:email", async(req: Request, res: Response) => {
-    const responseRedisConn = await fetch(`http://localhost:${Ports.RedisLogin + req.url}`, {
+    const responseRedisConn = await fetch(`http://${Hosts.RedisLogin}:${Ports.RedisLogin + req.url}`, {
         method:"delete",
         headers:{"X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"redis"},
     });
