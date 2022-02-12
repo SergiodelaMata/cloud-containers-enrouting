@@ -93,4 +93,58 @@ router.post("/checkLogged", async(req: Request, res: Response) => {
     res.send(await responseRedisConn.json());
   });
 
+  router.put("/block/:email", async(req: Request, res: Response) => {
+    const responseRedisConn = await fetch(`http://${Hosts.RedisLogin}:${Ports.RedisLogin}/block/${req.params.email}`,
+    {
+        method:"put",
+        body: JSON.stringify(req.body),
+        headers:{"X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"redis"},
+    });
+    const block = await responseRedisConn.json();
+    //var checkResponse = JSON.parse(JSON.stringify(block));
+    var formattedResponse = {block : true};
+
+    res.header("Content-Type", "application/json");
+    res.header("X-version","2");
+    res.header("X-sender","enrouting");
+    res.header("X-destination","app");
+    res.send(formattedResponse);
+  });
+
+  router.get("/isBlock/:email", async(req: Request, res: Response) => {
+    const responseRedisConn = await fetch(`http://${Hosts.RedisLogin}:${Ports.RedisLogin + req.url}`,
+    {
+        method:"get",
+        headers:{"X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"redis"},
+    });
+    const block = await responseRedisConn.json();
+    var checkResponse = JSON.parse(JSON.stringify(block));
+    var formattedResponse;
+    if(checkResponse.status == "empty")
+    {
+        formattedResponse = {block : false};
+    }
+    else
+    {
+        formattedResponse = {block : true};
+    }
+    res.header("Content-Type", "application/json");
+    res.header("X-version","2");
+    res.header("X-sender","enrouting");
+    res.header("X-destination","app");
+    res.send(formattedResponse);
+  });
+
+  router.delete("/removeBlock/:email", async(req: Request, res: Response) => {
+    const responseRedisConn = await fetch(`http://${Hosts.RedisLogin}:${Ports.RedisLogin + req.url}`, {
+        method:"delete",
+        headers:{"X-version":"2", "X-sender-service":"enrouting", "X-destination-service":"redis"},
+    });
+    res.header("Content-Type", "application/json");
+    res.header("X-version","2");
+    res.header("X-sender","enrouting");
+    res.header("X-destination","app");
+    res.send(await responseRedisConn.json());
+  });
+
 export default router;
