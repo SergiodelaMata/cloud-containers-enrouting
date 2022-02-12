@@ -54,7 +54,9 @@ router.post("/user", async(req: Request, res: Response) => {
       password : req.body.password,
       telephone : req.body.telephone,
       email : req.body.email,
-      rol : "user"
+      rol : "user",
+      creditcard : req.body.creditcard,
+      expiredatecreditcard: req.body.expiredatecreditcard,
     }
     const response = await fetch(`http://${Hosts.Users}:${Ports.Users + req.url}`, {
       method:"post",
